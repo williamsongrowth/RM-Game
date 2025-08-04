@@ -481,10 +481,10 @@
             <div style="background: white; padding: 15px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="font-weight: bold; color: #2c3e50;">Training Progress</span>
-                    <span id="progressText" style="color: #6c757d;">Scenario 1 of 15</span>
+                    <span id="progressText" style="color: #6c757d;">Scenario 1 of 3</span>
                 </div>
                 <div class="progress-bar">
-                    <div id="progressFill" class="progress-fill" style="width: 6.67%;"></div>
+                    <div id="progressFill" class="progress-fill" style="width: 33.33%;"></div>
                 </div>
             </div>
             
@@ -606,13 +606,13 @@
             <div class="decision-panel">
                 <h3>Your Decision</h3>
                 <div class="decision-options">
-                    <button class="decision-btn accept" onclick="selectDecision('accept')">
+                    <button class="decision-btn accept" id="acceptBtn">
                         ✓ Accept G3 Recommendations
                     </button>
-                    <button class="decision-btn" onclick="selectDecision('investigate')">
+                    <button class="decision-btn" id="investigateBtn">
                         🔍 Investigate Further
                     </button>
-                    <button class="decision-btn" onclick="selectDecision('override')">
+                    <button class="decision-btn" id="overrideBtn">
                         ⚠️ Override System
                     </button>
                 </div>
@@ -634,7 +634,7 @@
                     <div class="rate-input-grid" id="rateInputs">
                     </div>
                     
-                    <button class="submit-btn" onclick="submitDecision()">Submit Override</button>
+                    <button class="submit-btn" id="submitOverrideBtn">Submit Override</button>
                 </div>
             </div>
             
@@ -645,17 +645,21 @@
                     <div>Performance Score: <span class="score" id="scoreValue">85</span>/100</div>
                 </div>
                 <div class="learning-point" id="learningPoint"></div>
-                <button class="next-scenario-btn" onclick="nextScenario()">Next Scenario</button>
+                <button class="next-scenario-btn" id="nextScenarioBtn">Next Scenario</button>
             </div>
         </div>
     </div>
 
     <script>
+        console.log('Script starting...');
+        
+        // Global variables
         let currentScenario = 0;
         let totalScore = 0;
         let selectedDecision = '';
         let demandChart, sensitivityChart, paceChart;
         
+        // Scenario data - CLEAN VERSION WITH NO SYNTAX ERRORS
         const scenarios = [
             {
                 type: "Trust Scenario",
@@ -784,442 +788,288 @@
                     override: "Perfect! You recognized information G3 doesn't have. This is legitimate override territory - external events require human intervention."
                 },
                 learning: "Override scenarios involve information G3 cannot access: breaking news, last-minute events, or strategic decisions beyond revenue optimization."
-            },
-            {
-                type: "Data Quality Alert",
-                title: "Forecast Accuracy Warning",
-                description: "G3's forecast accuracy has dropped to 78% this week. The system is flagging potential data quality issues that require immediate attention.",
-                isException: true,
-                hasAlert: true,
-                alertText: "SYSTEM ALERT: Forecast accuracy below threshold (78% vs 90+ target) - Data quality investigation required",
-                alertType: "critical",
-                confidence: "Low Confidence",
-                performance: {
-                    avgOccupancy: "84%",
-                    avgADR: "$167",
-                    avgRevPAR: "$140",
-                    strIndex: "103.2",
-                    forecastAccuracy: "78%",
-                    systemAdoption: "91%",
-                    revenueOpportunity: "+$890",
-                    systemROI: "285%",
-                    overrideRate: "23%",
-                    alertCount: "4"
-                },
-                competitors: [
-                    {property: "Your Hotel", trend: "⚠️ Data issues", availability: "Available", update: "1h ago"},
-                    {property: "City Center", trend: "➡️ Stable", availability: "Limited", update: "2h ago"},
-                    {property: "Business Plaza", trend: "↗️ +$7 (3h)", availability: "Available", update: "3h ago"},
-                    {property: "Urban Lodge", trend: "➡️ Stable", availability: "Available", update: "4h ago"}
-                ],
-                roomTypes: [
-                    {name: "Standard King", currentRate: 165, recommendedRate: 170, reasoning: "Low confidence estimate"},
-                    {name: "Business Queen", currentRate: 185, recommendedRate: 185, reasoning: "Maintain current rate"},
-                    {name: "Executive Suite", currentRate: 245, recommendedRate: 250, reasoning: "Uncertain demand signal"}
-                ],
-                demandData: [82, 78, 85, 79, 88, 84, 81, 86, 83, 87, 79, 82, 85, 80],
-                revenueData: [13530, 13026, 14025, 13041, 14520, 13860, 13365, 14190, 13695, 14355, 13041, 13530, 14025, 13200],
-                paceData: [98, 95, 102, 96, 105, 101, 97, 103, 99, 104, 96, 98, 102, 96],
-                optimalDecision: "investigate",
-                externalInfo: "⚠️ SYSTEM DIAGNOSIS: PMS integration showing inconsistent pickup data. Group bookings may not be flowing correctly. Check: walkups vs no-shows, group block accuracy, and third-party channel data.",
-                feedback: {
-                    accept: "Dangerous! When G3 shows 'Low Confidence' and poor forecast accuracy, accepting recommendations without investigation can compound errors.",
-                    investigate: "Perfect! Data quality issues require immediate attention. G3 cannot optimize effectively with bad inputs - 'Garbage In, Garbage Out' applies.",
-                    override: "Override won't fix the underlying data problem. Investigation and correction of data issues should come before pricing decisions."
-                },
-                learning: "G3's most common failure mode is data quality issues. When forecast accuracy drops below 85%, investigate PMS integration, group blocks, and channel data before making pricing decisions."
-            },
-            {
-                type: "Room Type Optimization",
-                title: "Independent Room Category Pricing",
-                description: "G3 recommends different rate changes across room types that break traditional pricing hierarchy. Suites going down while standards go up.",
-                isException: false,
-                hasAlert: false,
-                confidence: "High Confidence",
-                performance: {
-                    avgOccupancy: "73%",
-                    avgADR: "$198",
-                    avgRevPAR: "$145",
-                    strIndex: "107.3",
-                    forecastAccuracy: "94%",
-                    systemAdoption: "88%",
-                    revenueOpportunity: "+$3,450",
-                    systemROI: "329%",
-                    overrideRate: "9%",
-                    alertCount: "0"
-                },
-                competitors: [
-                    {property: "Your Hotel", trend: "🎯 Category optimization", availability: "Mixed", update: "45min ago"},
-                    {property: "Luxury Inn", trend: "➡️ Hierarchy pricing", availability: "Available", update: "2h ago"},
-                    {property: "Premium Suites", trend: "↗️ +$15 (3h)", availability: "Limited", update: "3h ago"},
-                    {property: "Business Hotel", trend: "➡️ Standard approach", availability: "Available", update: "1h ago"}
-                ],
-                roomTypes: [
-                    {name: "Standard King", currentRate: 185, recommendedRate: 195, reasoning: "High corporate demand"},
-                    {name: "Deluxe Queen", currentRate: 205, recommendedRate: 215, reasoning: "Limited availability"},
-                    {name: "Junior Suite", currentRate: 275, recommendedRate: 265, reasoning: "Low suite demand"},
-                    {name: "Executive Suite", currentRate: 325, recommendedRate: 315, reasoning: "Stimulate luxury bookings"}
-                ],
-                demandData: [88, 85, 82, 79, 76, 73, 70, 68, 65, 62, 60, 58, 55, 52],
-                revenueData: [17248, 17085, 16810, 16185, 15504, 14599, 13720, 13328, 12675, 12214, 11700, 11368, 10725, 10140],
-                paceData: [105, 102, 98, 95, 91, 87, 83, 79, 75, 71, 68, 64, 60, 56],
-                optimalDecision: "accept",
-                externalInfo: "📊 G3 ROOM-TYPE ANALYTICS: Independent category pricing maximizes total revenue by matching room-specific demand patterns rather than maintaining traditional rate spreads.",
-                feedback: {
-                    accept: "Brilliant! G3's room-type optimization prices categories independently based on actual demand, not traditional hierarchy rules. This maximizes total property revenue.",
-                    investigate: "Investigation confirms G3's approach is correct. Breaking traditional hierarchy based on demand data often increases total revenue significantly.",
-                    override: "Maintaining traditional hierarchy would leave money on the table. G3's category-specific optimization typically increases RevPAR by 3-7%."
-                },
-                learning: "G3's strongest feature is independent room-type pricing based on actual demand patterns rather than fixed hierarchy rules, often breaking traditional rate spreads to maximize total revenue."
-            },
-            {
-                type: "Advanced Trust Scenario",
-                title: "Length-of-Stay Optimization",
-                description: "G3's sophisticated algorithms are optimizing multi-night stays, but the pricing looks counterintuitive - higher rates for longer stays during slow periods.",
-                isException: false,
-                hasAlert: false,
-                confidence: "High Confidence",
-                performance: {
-                    avgOccupancy: "71%",
-                    avgADR: "$142",
-                    avgRevPAR: "$101",
-                    strIndex: "96.4",
-                    forecastAccuracy: "95%",
-                    systemAdoption: "93%",
-                    revenueOpportunity: "+$4,250",
-                    systemROI: "318%",
-                    overrideRate: "7%",
-                    alertCount: "1"
-                },
-                competitors: [
-                    {property: "Your Hotel", trend: "➡️ Optimizing LOS", availability: "Available", update: "30min ago"},
-                    {property: "Resort Bay", trend: "➡️ Standard pricing", availability: "Available", update: "2h ago"},
-                    {property: "Marina Lodge", trend: "↘️ Discount pricing", availability: "High Avail", update: "4h ago"},
-                    {property: "Coastal Resort", trend: "➡️ Package focus", availability: "Available", update: "3h ago"}
-                ],
-                roomTypes: [
-                    {name: "Ocean View 1-2N", currentRate: 145, recommendedRate: 155, reasoning: "Premium for short stays"},
-                    {name: "Ocean View 3-4N", currentRate: 138, recommendedRate: 148, reasoning: "Balanced LOS pricing"},
-                    {name: "Ocean View 5+N", currentRate: 132, recommendedRate: 142, reasoning: "Volume optimization"}
-                ],
-                demandData: [45, 52, 48, 65, 78, 85, 82, 79, 75, 68, 62, 58, 55, 50],
-                revenueData: [6525, 7904, 7104, 9750, 11700, 12750, 12300, 11850, 11250, 10200, 9300, 8700, 8250, 7500],
-                paceData: [65, 68, 64, 78, 89, 92, 88, 85, 80, 75, 70, 66, 62, 58],
-                optimalDecision: "accept",
-                externalInfo: "📊 G3 ADVANCED ANALYTICS: Length-of-stay optimization uses dynamic programming to price all stay durations simultaneously, maximizing total revenue across booking windows rather than simple nightly rates.",
-                feedback: {
-                    accept: "Excellent! G3's LOS optimization considers displacement effects and booking window behavior. The system maximizes total revenue, not just nightly ADR.",
-                    investigate: "Good to investigate, but G3's length-of-stay algorithms are processing 100+ variables including displacement costs and booking probability curves.",
-                    override: "G3's LOS pricing considers factors beyond intuition: opportunity costs, displacement effects, and total revenue optimization across all stay patterns."
-                },
-                learning: "Length-of-stay optimization represents G3's most sophisticated capability - pricing stay durations independently based on demand patterns and displacement effects."
-            },
-            {
-                type: "Final Assessment",
-                title: "Comprehensive Revenue Optimization Challenge",
-                description: "Master-level scenario combining room-type optimization, competitive response, overbooking management, and stakeholder communication in one complex decision.",
-                isException: false,
-                hasAlert: true,
-                alertText: "Multi-factor optimization opportunity: G3 has identified revenue enhancement across pricing, inventory, and competitive positioning",
-                alertType: "warning",
-                confidence: "High Confidence",
-                performance: {
-                    avgOccupancy: "87%",
-                    avgADR: "$181",
-                    avgRevPAR: "$157",
-                    strIndex: "112.4",
-                    forecastAccuracy: "96%",
-                    systemAdoption: "91%",
-                    revenueOpportunity: "+$6,250",
-                    systemROI: "347%",
-                    overrideRate: "8%",
-                    alertCount: "7"
-                },
-                competitors: [
-                    {property: "Your Hotel", trend: "🎯 G3 Optimized", availability: "Limited", update: "Current"},
-                    {property: "Competitor A", trend: "📊 Manual pricing", availability: "Available", update: "2h ago"},
-                    {property: "Competitor B", trend: "📈 Rate increases", availability: "Very Limited", update: "1h ago"},
-                    {property: "Competitor C", trend: "📉 Promotional rates", availability: "High Avail", update: "3h ago"}
-                ],
-                roomTypes: [
-                    {name: "Standard King", currentRate: 175, recommendedRate: 185, reasoning: "Multi-factor optimization"},
-                    {name: "Business Queen", currentRate: 195, recommendedRate: 205, reasoning: "Independent category pricing"},
-                    {name: "Executive Suite", currentRate: 265, recommendedRate: 255, reasoning: "Demand-based adjustment"},
-                    {name: "Premium Suite", currentRate: 345, recommendedRate: 365, reasoning: "Luxury segment strength"}
-                ],
-                demandData: [88, 91, 94, 97, 100, 103, 106, 104, 101, 98, 95, 92, 89, 86],
-                revenueData: [16368, 16926, 17484, 18042, 18600, 19158, 19716, 19344, 18786, 18228, 17670, 17112, 16554, 15996],
-                paceData: [115, 118, 121, 124, 127, 130, 133, 131, 128, 125, 122, 119, 116, 113],
-                optimalDecision: "accept",
-                externalInfo: "🏆 COMPREHENSIVE ANALYSIS: G3 is simultaneously optimizing room categories, managing overbooking levels, responding to competitor actions, and forecasting demand across multiple time horizons.",
-                feedback: {
-                    accept: "Outstanding! You've demonstrated mastery of G3's comprehensive capabilities. Trusting the system's multi-dimensional optimization delivers maximum revenue performance.",
-                    investigate: "Investigation confirms G3's sophisticated analysis across all revenue levers. The system's comprehensive approach outperforms manual optimization attempts.",
-                    override: "Overriding G3's comprehensive optimization would require superhuman analytical capabilities. The system processes hundreds of variables simultaneously."
-                },
-                learning: "G3's true power lies in simultaneously optimizing multiple revenue variables that would be impossible for humans to calculate manually, delivering superior total performance."
             }
         ];
         
+        console.log('Scenarios loaded successfully');
+        
+        // Initialize the application
         function initializeScenario() {
+            console.log('Initializing scenario', currentScenario);
             const scenario = scenarios[currentScenario];
             
-            // Update progress indicator
-            const progressPercent = ((currentScenario + 1) / scenarios.length) * 100;
-            document.getElementById('progressFill').style.width = `${progressPercent}%`;
-            document.getElementById('progressText').textContent = `Scenario ${currentScenario + 1} of ${scenarios.length}`;
-            
-            // Update header
-            document.getElementById('scenarioType').textContent = `${scenario.type} - ${currentScenario + 1}/${scenarios.length}`;
-            document.getElementById('scenarioTitle').textContent = scenario.title;
-            document.getElementById('scenarioDescription').textContent = scenario.description;
-            
-            // Handle alerts with enhanced styling
-            const alertBanner = document.getElementById('alertBanner');
-            if (scenario.hasAlert) {
-                document.getElementById('alertText').textContent = scenario.alertText;
-                alertBanner.className = `alert-banner show ${scenario.alertType || ''}`;
+            try {
+                // Update progress indicator
+                const progressPercent = ((currentScenario + 1) / scenarios.length) * 100;
+                document.getElementById('progressFill').style.width = progressPercent + '%';
+                document.getElementById('progressText').textContent = 'Scenario ' + (currentScenario + 1) + ' of ' + scenarios.length;
                 
-                // Add pulsing animation for critical alerts
-                if (scenario.alertType === 'critical') {
-                    alertBanner.style.animation = 'pulse 2s infinite';
+                // Update header
+                document.getElementById('scenarioType').textContent = scenario.type + ' - ' + (currentScenario + 1) + '/' + scenarios.length;
+                document.getElementById('scenarioTitle').textContent = scenario.title;
+                document.getElementById('scenarioDescription').textContent = scenario.description;
+                
+                // Handle alerts
+                const alertBanner = document.getElementById('alertBanner');
+                if (scenario.hasAlert) {
+                    document.getElementById('alertText').textContent = scenario.alertText;
+                    alertBanner.className = 'alert-banner show ' + (scenario.alertType || '');
+                    
+                    if (scenario.alertType === 'critical') {
+                        alertBanner.style.animation = 'pulse 2s infinite';
+                    } else {
+                        alertBanner.style.animation = 'none';
+                    }
                 } else {
+                    alertBanner.className = 'alert-banner';
                     alertBanner.style.animation = 'none';
                 }
-            } else {
-                alertBanner.className = 'alert-banner';
-                alertBanner.style.animation = 'none';
-            }
-            
-            // Update performance metrics with visual indicators
-            Object.keys(scenario.performance).forEach(key => {
-                const element = document.getElementById(key);
-                if (element) {
-                    element.textContent = scenario.performance[key];
-                    
-                    // Add visual indicators for key metrics
-                    if (key === 'forecastAccuracy') {
-                        const accuracy = parseInt(scenario.performance[key]);
-                        element.className = 'metric-value';
-                        if (accuracy < 85) {
-                            element.classList.add('negative');
-                        } else if (accuracy >= 95) {
-                            element.classList.add('positive');
+                
+                // Update performance metrics
+                Object.keys(scenario.performance).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.textContent = scenario.performance[key];
+                        
+                        // Add visual indicators
+                        if (key === 'forecastAccuracy') {
+                            const accuracy = parseInt(scenario.performance[key]);
+                            element.className = 'metric-value';
+                            if (accuracy < 85) {
+                                element.classList.add('negative');
+                            } else if (accuracy >= 95) {
+                                element.classList.add('positive');
+                            }
+                        }
+                        
+                        if (key === 'overrideRate') {
+                            const overrideRate = parseInt(scenario.performance[key]);
+                            element.className = 'metric-value';
+                            if (overrideRate > 20) {
+                                element.classList.add('negative');
+                            } else if (overrideRate <= 10) {
+                                element.classList.add('positive');
+                            } else {
+                                element.classList.add('warning');
+                            }
                         }
                     }
-                    
-                    if (key === 'overrideRate') {
-                        const overrideRate = parseInt(scenario.performance[key]);
-                        element.className = 'metric-value';
-                        if (overrideRate > 20) {
-                            element.classList.add('negative');
-                        } else if (overrideRate <= 10) {
-                            element.classList.add('positive');
-                        } else {
-                            element.classList.add('warning');
-                        }
+                });
+                
+                // Update competitive table
+                const tableBody = document.getElementById('competitiveData');
+                tableBody.innerHTML = '';
+                scenario.competitors.forEach(comp => {
+                    const row = tableBody.insertRow();
+                    let trendClass = '';
+                    if (comp.trend.includes('↗️') || comp.trend.includes('🚀')) {
+                        trendClass = 'style="color: #28a745; font-weight: bold;"';
+                    } else if (comp.trend.includes('↘️')) {
+                        trendClass = 'style="color: #dc3545; font-weight: bold;"';
+                    } else if (comp.trend.includes('⚠️')) {
+                        trendClass = 'style="color: #ffc107; font-weight: bold;"';
                     }
-                }
-            });
-            
-            // Update competitive table
-            const tableBody = document.getElementById('competitiveData');
-            tableBody.innerHTML = '';
-            scenario.competitors.forEach(comp => {
-                const row = tableBody.insertRow();
-                let trendClass = '';
-                if (comp.trend.includes('↗️') || comp.trend.includes('🚀')) {
-                    trendClass = 'style="color: #28a745; font-weight: bold;"';
-                } else if (comp.trend.includes('↘️')) {
-                    trendClass = 'style="color: #dc3545; font-weight: bold;"';
-                } else if (comp.trend.includes('⚠️')) {
-                    trendClass = 'style="color: #ffc107; font-weight: bold;"';
+                    
+                    row.innerHTML = '<td>' + comp.property + '</td><td ' + trendClass + '>' + comp.trend + '</td><td>' + comp.availability + '</td><td>' + comp.update + '</td>';
+                });
+                
+                // Update G3 recommendation
+                const confidenceElement = document.getElementById('confidenceScore');
+                confidenceElement.textContent = scenario.confidence;
+                
+                // Style confidence indicator
+                if (scenario.confidence === 'High Confidence') {
+                    confidenceElement.style.backgroundColor = '#28a745';
+                    confidenceElement.style.color = 'white';
+                } else if (scenario.confidence === 'Medium Confidence') {
+                    confidenceElement.style.backgroundColor = '#ffc107';
+                    confidenceElement.style.color = '#000';
+                } else {
+                    confidenceElement.style.backgroundColor = '#dc3545';
+                    confidenceElement.style.color = 'white';
                 }
                 
-                row.innerHTML = `
-                    <td>${comp.property}</td>
-                    <td ${trendClass}>${comp.trend}</td>
-                    <td>${comp.availability}</td>
-                    <td>${comp.update}</td>
-                `;
-            });
-            
-            // Update G3 recommendation
-            const confidenceElement = document.getElementById('confidenceScore');
-            confidenceElement.textContent = scenario.confidence;
-            
-            // Style confidence indicator
-            if (scenario.confidence === 'High Confidence') {
-                confidenceElement.style.backgroundColor = '#28a745';
-                confidenceElement.style.color = 'white';
-            } else if (scenario.confidence === 'Medium Confidence') {
-                confidenceElement.style.backgroundColor = '#ffc107';
-                confidenceElement.style.color = '#000';
-            } else {
-                confidenceElement.style.backgroundColor = '#dc3545';
-                confidenceElement.style.color = 'white';
-            }
-            
-            // Update recommendation reasoning
-            document.getElementById('recommendationReason').textContent = 
-                scenario.roomTypes.length > 1 ? 
-                "Multi-room type optimization analyzing segment demand, competitive positioning, and booking patterns" : 
-                scenario.roomTypes[0].reasoning || "Single room type optimization";
-            
-            // Update recommended rates with change indicators
-            const ratesContainer = document.getElementById('recommendedRates');
-            ratesContainer.innerHTML = '';
-            scenario.roomTypes.forEach(room => {
-                const change = room.recommendedRate - room.currentRate;
-                const changeIndicator = change > 0 ? `+${change}` : change < 0 ? `-${Math.abs(change)}` : 'No change';
-                const changeColor = change > 0 ? '#28a745' : change < 0 ? '#dc3545' : '#6c757d';
+                // Update recommendation reasoning
+                document.getElementById('recommendationReason').textContent = 
+                    scenario.roomTypes.length > 1 ? 
+                    "Multi-room type optimization analyzing segment demand, competitive positioning, and booking patterns" : 
+                    (scenario.roomTypes[0].reasoning || "Single room type optimization");
                 
-                const rateDiv = document.createElement('div');
-                rateDiv.className = 'rate-item';
-                rateDiv.innerHTML = `
-                    <div class="rate-value">${room.recommendedRate}</div>
-                    <div class="rate-label">${room.name}</div>
-                    <div style="font-size: 0.8em; color: ${changeColor}; margin-top: 5px; font-weight: bold;">
-                        ${changeIndicator}
-                    </div>
-                    <div style="font-size: 0.75em; color: #666; margin-top: 3px;">
-                        ${room.reasoning}
-                    </div>
-                `;
-                ratesContainer.appendChild(rateDiv);
-            });
-            
-            // Add external info if exists
-            const existingInfo = document.querySelector('.g3-recommendation .learning-point');
-            if (existingInfo) {
-                existingInfo.remove();
+                // Update recommended rates
+                const ratesContainer = document.getElementById('recommendedRates');
+                ratesContainer.innerHTML = '';
+                scenario.roomTypes.forEach(room => {
+                    const change = room.recommendedRate - room.currentRate;
+                    const changeIndicator = change > 0 ? '+ + change : change < 0 ? '- + Math.abs(change) : 'No change';
+                    const changeColor = change > 0 ? '#28a745' : change < 0 ? '#dc3545' : '#6c757d';
+                    
+                    const rateDiv = document.createElement('div');
+                    rateDiv.className = 'rate-item';
+                    rateDiv.innerHTML = '<div class="rate-value"> + room.recommendedRate + '</div><div class="rate-label">' + room.name + '</div><div style="font-size: 0.8em; color: ' + changeColor + '; margin-top: 5px; font-weight: bold;">' + changeIndicator + '</div><div style="font-size: 0.75em; color: #666; margin-top: 3px;">' + room.reasoning + '</div>';
+                    ratesContainer.appendChild(rateDiv);
+                });
+                
+                // Add external info if exists
+                const existingInfo = document.querySelector('.g3-recommendation .learning-point');
+                if (existingInfo) {
+                    existingInfo.remove();
+                }
+                
+                if (scenario.externalInfo) {
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'learning-point';
+                    infoDiv.innerHTML = scenario.externalInfo;
+                    document.querySelector('.g3-recommendation').appendChild(infoDiv);
+                }
+                
+                createCharts(scenario);
+                
+                // Reset decision panel
+                document.getElementById('overridePanel').style.display = 'none';
+                document.getElementById('resultsPanel').style.display = 'none';
+                selectedDecision = '';
+                
+                // Clear any previous styling on decision buttons
+                document.querySelectorAll('.decision-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                
+                console.log('Scenario initialized successfully');
+            } catch (error) {
+                console.error('Error initializing scenario:', error);
             }
-            
-            if (scenario.externalInfo) {
-                const infoDiv = document.createElement('div');
-                infoDiv.className = 'learning-point';
-                infoDiv.innerHTML = scenario.externalInfo;
-                document.querySelector('.g3-recommendation').appendChild(infoDiv);
-            }
-            
-            createCharts(scenario);
-            
-            // Reset decision panel
-            document.getElementById('overridePanel').style.display = 'none';
-            document.getElementById('resultsPanel').style.display = 'none';
-            selectedDecision = '';
-            
-            // Clear any previous styling on decision buttons
-            document.querySelectorAll('.decision-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
         }
         
         function createCharts(scenario) {
-            // Destroy existing charts
-            if (demandChart) demandChart.destroy();
-            if (sensitivityChart) sensitivityChart.destroy();
-            if (paceChart) paceChart.destroy();
-            
-            const labels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10', 'Day 11', 'Day 12', 'Day 13', 'Day 14'];
-            
-            // Demand forecast chart
-            const demandCtx = document.getElementById('demandChart').getContext('2d');
-            demandChart = new Chart(demandCtx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Forecasted Demand',
-                        data: scenario.demandData,
-                        borderColor: '#007bff',
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Rooms' } },
-                        x: { title: { display: true, text: 'Days Ahead' } }
+            console.log('Creating charts...');
+            try {
+                // Destroy existing charts
+                if (demandChart) demandChart.destroy();
+                if (sensitivityChart) sensitivityChart.destroy();
+                if (paceChart) paceChart.destroy();
+                
+                const labels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10', 'Day 11', 'Day 12', 'Day 13', 'Day 14'];
+                
+                // Demand forecast chart
+                const demandCtx = document.getElementById('demandChart').getContext('2d');
+                demandChart = new Chart(demandCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Forecasted Demand',
+                            data: scenario.demandData,
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Rooms' } },
+                            x: { title: { display: true, text: 'Days Ahead' } }
+                        }
                     }
-                }
-            });
-            
-            // Revenue optimization chart
-            const sensitivityCtx = document.getElementById('sensitivityChart').getContext('2d');
-            sensitivityChart = new Chart(sensitivityCtx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Projected Revenue',
-                        data: scenario.revenueData,
-                        borderColor: '#28a745',
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            title: { display: true, text: 'Daily Revenue ($)' },
-                            ticks: { callback: value => ' + value.toLocaleString() }
-                        },
-                        x: { title: { display: true, text: 'Days Ahead' } }
+                });
+                
+                // Revenue optimization chart
+                const sensitivityCtx = document.getElementById('sensitivityChart').getContext('2d');
+                sensitivityChart = new Chart(sensitivityCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Projected Revenue',
+                            data: scenario.revenueData,
+                            borderColor: '#28a745',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                title: { display: true, text: 'Daily Revenue ($)' },
+                                ticks: { 
+                                    callback: function(value) { 
+                                        return ' + value.toLocaleString(); 
+                                    } 
+                                }
+                            },
+                            x: { title: { display: true, text: 'Days Ahead' } }
+                        }
                     }
-                }
-            });
-            
-            // Booking pace chart
-            const paceCtx = document.getElementById('paceChart').getContext('2d');
-            paceChart = new Chart(paceCtx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Booking Pace vs LY',
-                        data: scenario.paceData,
-                        borderColor: '#ffc107',
-                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            title: { display: true, text: 'Pace Index (%)' } 
-                        },
-                        x: { title: { display: true, text: 'Days Ahead' } }
+                });
+                
+                // Booking pace chart
+                const paceCtx = document.getElementById('paceChart').getContext('2d');
+                paceChart = new Chart(paceCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Booking Pace vs LY',
+                            data: scenario.paceData,
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                title: { display: true, text: 'Pace Index (%)' } 
+                            },
+                            x: { title: { display: true, text: 'Days Ahead' } }
+                        }
                     }
-                }
-            });
+                });
+                
+                console.log('Charts created successfully');
+            } catch (error) {
+                console.error('Error creating charts:', error);
+            }
         }
         
         function selectDecision(decision) {
+            console.log('Decision selected:', decision);
             selectedDecision = decision;
             
             // Visual feedback for button selection
             document.querySelectorAll('.decision-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
-            event.target.classList.add('selected');
+            
+            // Find and select the clicked button
+            let clickedButton;
+            if (decision === 'accept') {
+                clickedButton = document.getElementById('acceptBtn');
+            } else if (decision === 'investigate') {
+                clickedButton = document.getElementById('investigateBtn');
+            } else if (decision === 'override') {
+                clickedButton = document.getElementById('overrideBtn');
+            }
+            
+            if (clickedButton) {
+                clickedButton.classList.add('selected');
+            }
             
             const overridePanel = document.getElementById('overridePanel');
             
@@ -1253,61 +1103,16 @@
             investigationDiv.style.overflow = 'auto';
             investigationDiv.style.boxShadow = '0 20px 40px rgba(0,0,0,0.3)';
             
-            let investigationContent = `
-                <h3 style="color: #007bff; margin-bottom: 20px;">🔍 G3 Investigation Results</h3>
-                <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
-                    <strong>System Analysis:</strong><br>
-                    Confidence Level: ${scenario.confidence}<br>
-                    Forecast Accuracy: ${scenario.performance.forecastAccuracy}<br>
-                    Current Override Rate: ${scenario.performance.overrideRate}<br>
-                </div>
-            `;
+            let investigationContent = '<h3 style="color: #007bff; margin-bottom: 20px;">🔍 G3 Investigation Results</h3><div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;"><strong>System Analysis:</strong><br>Confidence Level: ' + scenario.confidence + '<br>Forecast Accuracy: ' + scenario.performance.forecastAccuracy + '<br>Current Override Rate: ' + scenario.performance.overrideRate + '<br></div>';
             
             // Add scenario-specific investigation insights
-            if (scenario.type.includes('Data Quality')) {
-                investigationContent += `
-                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #ffc107;">
-                        <strong>⚠️ Data Quality Issues Detected:</strong><br>
-                        • PMS integration showing inconsistencies<br>
-                        • Forecast accuracy below threshold<br>
-                        • Immediate technical attention required
-                    </div>
-                `;
-            } else if (scenario.confidence === 'Medium Confidence') {
-                investigationContent += `
-                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #ffc107;">
-                        <strong>📊 Mixed Signals Detected:</strong><br>
-                        • Booking pace variance: ${scenario.alertText || 'Pattern inconsistencies noted'}<br>
-                        • Consider market factors not in historical data<br>
-                        • Review competitor actions in past 24 hours
-                    </div>
-                `;
+            if (scenario.confidence === 'Medium Confidence') {
+                investigationContent += '<div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #ffc107;"><strong>📊 Mixed Signals Detected:</strong><br>• Booking pace variance: ' + (scenario.alertText || 'Pattern inconsistencies noted') + '<br>• Consider market factors not in historical data<br>• Review competitor actions in past 24 hours</div>';
             } else {
-                investigationContent += `
-                    <div style="background: #d4edda; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #28a745;">
-                        <strong>✅ System Analysis Confirms:</strong><br>
-                        • All indicators within normal parameters<br>
-                        • High confidence in recommendations<br>
-                        • Standard market conditions detected
-                    </div>
-                `;
+                investigationContent += '<div style="background: #d4edda; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #28a745;"><strong>✅ System Analysis Confirms:</strong><br>• All indicators within normal parameters<br>• High confidence in recommendations<br>• Standard market conditions detected</div>';
             }
             
-            investigationContent += `
-                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #2196f3;">
-                    <strong>📈 Key Factors G3 Considered:</strong><br>
-                    • ${scenario.roomTypes.length} room types analyzed independently<br>
-                    • Competitive intelligence from ${scenario.competitors.length} properties<br>
-                    • 14-day forward demand forecast<br>
-                    • Price sensitivity and booking pace analysis
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button onclick="closeInvestigation(); submitDecision();" 
-                            style="background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1.1em; cursor: pointer;">
-                        Continue with Decision
-                    </button>
-                </div>
-            `;
+            investigationContent += '<div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #2196f3;"><strong>📈 Key Factors G3 Considered:</strong><br>• ' + scenario.roomTypes.length + ' room types analyzed independently<br>• Competitive intelligence from ' + scenario.competitors.length + ' properties<br>• 14-day forward demand forecast<br>• Price sensitivity and booking pace analysis</div><div style="text-align: center; margin-top: 20px;"><button onclick="closeInvestigation(); submitDecision();" style="background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1.1em; cursor: pointer;">Continue with Decision</button></div>';
             
             investigationDiv.innerHTML = investigationContent;
             
@@ -1320,12 +1125,12 @@
             backdrop.style.height = '100%';
             backdrop.style.backgroundColor = 'rgba(0,0,0,0.5)';
             backdrop.style.zIndex = '999';
-            backdrop.onclick = () => closeInvestigation();
+            backdrop.onclick = function() { closeInvestigation(); };
             
             document.body.appendChild(backdrop);
             document.body.appendChild(investigationDiv);
             
-            window.currentInvestigation = { backdrop, investigationDiv };
+            window.currentInvestigation = { backdrop: backdrop, investigationDiv: investigationDiv };
         }
         
         function closeInvestigation() {
@@ -1341,53 +1146,48 @@
             const rateInputs = document.getElementById('rateInputs');
             rateInputs.innerHTML = '';
             
-            scenario.roomTypes.forEach((room, index) => {
+            scenario.roomTypes.forEach(function(room, index) {
                 const inputDiv = document.createElement('div');
                 inputDiv.className = 'rate-input';
-                inputDiv.innerHTML = `
-                    <label>${room.name}</label>
-                    <input type="number" id="override_${index}" value="${room.recommendedRate}" min="50" max="500" step="5">
-                `;
+                inputDiv.innerHTML = '<label>' + room.name + '</label><input type="number" id="override_' + index + '" value="' + room.recommendedRate + '" min="50" max="500" step="5">';
                 rateInputs.appendChild(inputDiv);
             });
         }
         
         function submitDecision() {
+            console.log('Submitting decision:', selectedDecision);
             const scenario = scenarios[currentScenario];
             let score = 0;
             let feedback = '';
-            let learningPoint = '';
             let bonusPoints = 0;
             
-            // Enhanced scoring system based on G3 RMS principles
+            // Enhanced scoring system
             if (selectedDecision === 'accept') {
                 if (scenario.optimalDecision === 'accept') {
                     score = 100;
-                    // Bonus for trusting system during normal operations
                     if (scenario.confidence === "High Confidence" && parseInt(scenario.performance.forecastAccuracy) >= 90) {
                         bonusPoints = 10;
                     }
                     feedback = scenario.feedback.accept;
                 } else if (scenario.optimalDecision === 'override') {
-                    score = 25; // Penalty for missing critical override scenarios
-                    feedback = `❌ ${scenario.feedback.accept} This was a critical override scenario where human intelligence was essential.`;
+                    score = 25;
+                    feedback = '❌ ' + scenario.feedback.accept + ' This was a critical override scenario where human intelligence was essential.';
                 } else {
-                    score = 75; // Reasonable but not optimal
+                    score = 75;
                     feedback = scenario.feedback.accept;
                 }
             } else if (selectedDecision === 'investigate') {
                 if (scenario.optimalDecision === 'investigate') {
                     score = 100;
-                    // Bonus for investigating when confidence is medium/low
-                    if (scenario.confidence === "Medium Confidence" || scenario.confidence === "Low Confidence") {
+                    if (scenario.confidence === "Medium Confidence") {
                         bonusPoints = 15;
                     }
                     feedback = scenario.feedback.investigate;
                 } else if (scenario.optimalDecision === 'accept') {
-                    score = 85; // Good practice, slightly inefficient
-                    feedback = `✓ ${scenario.feedback.investigate || "Good practice to investigate, though G3's recommendation was already optimal."}`;
+                    score = 85;
+                    feedback = '✓ ' + (scenario.feedback.investigate || "Good practice to investigate, though G3's recommendation was already optimal.");
                 } else {
-                    score = 90; // Investigation before override is wise
+                    score = 90;
                     feedback = scenario.feedback.investigate || "Good investigative instincts! Understanding the data before overriding is always wise.";
                 }
             } else if (selectedDecision === 'override') {
@@ -1400,19 +1200,17 @@
                 
                 if (scenario.optimalDecision === 'override') {
                     score = 100;
-                    // Bonus for proper override reasoning
                     if (overrideReason === 'external_event' && scenario.type.includes('Override')) {
                         bonusPoints = 20;
                     }
                     feedback = scenario.feedback.override;
                 } else {
-                    // Penalties based on override frequency and system performance
                     const currentOverrideRate = parseInt(scenario.performance.overrideRate);
                     const forecastAccuracy = parseInt(scenario.performance.forecastAccuracy);
                     
                     if (currentOverrideRate > 15 && forecastAccuracy > 90) {
-                        score = 10; // Heavy penalty for excessive overriding
-                        feedback = `❌ ${scenario.feedback.override} Your override rate is already ${currentOverrideRate}% - excessive overriding reduces G3's learning effectiveness.`;
+                        score = 10;
+                        feedback = '❌ ' + scenario.feedback.override + ' Your override rate is already ' + currentOverrideRate + '% - excessive overriding reduces G3\'s learning effectiveness.';
                     } else {
                         score = 20;
                         feedback = scenario.feedback.override;
@@ -1420,22 +1218,16 @@
                 }
             }
             
-            // Apply scenario-specific penalties and bonuses
-            if (scenario.type === "Data Quality Alert" && selectedDecision !== 'investigate') {
-                score = Math.max(10, score - 30); // Major penalty for ignoring data quality issues
-                feedback += "\n\n⚠️ CRITICAL: Data quality issues must be addressed immediately - they compound over time!";
-            }
-            
+            // Apply scenario-specific penalties
             if (scenario.hasAlert && scenario.alertType === "critical" && selectedDecision === 'accept') {
-                score = Math.max(15, score - 25); // Penalty for ignoring critical alerts
+                score = Math.max(15, score - 25);
             }
             
-            // Calculate final score with bonuses
+            // Calculate final score
             const finalScore = Math.min(100, score + bonusPoints);
-            learningPoint = scenario.learning;
             totalScore += finalScore;
             
-            // Enhanced performance categorization
+            // Performance categorization
             let performanceCategory = '';
             let performanceMessage = '';
             
@@ -1456,31 +1248,23 @@
                 performanceMessage = '🎯 Focus needed! Review G3 RMS principles: system excels at data analysis, humans add strategic value.';
             }
             
-            // Show results with enhanced feedback
+            // Show results
             const resultsPanel = document.getElementById('resultsPanel');
             const resultText = document.getElementById('resultText');
             const scoreElement = document.getElementById('scoreValue');
             const learningElement = document.getElementById('learningPoint');
             
-            resultText.innerHTML = `
-                <div style="margin-bottom: 15px;">
-                    <strong>${performanceCategory}:</strong> ${performanceMessage}
-                </div>
-                <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin: 10px 0;">
-                    ${feedback}
-                </div>
-                ${bonusPoints > 0 ? `<div style="color: #28a745; font-weight: bold; margin-top: 10px;">🌟 Bonus: +${bonusPoints} points for excellent judgment!</div>` : ''}
-            `;
+            resultText.innerHTML = '<div style="margin-bottom: 15px;"><strong>' + performanceCategory + ':</strong> ' + performanceMessage + '</div><div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin: 10px 0;">' + feedback + '</div>' + (bonusPoints > 0 ? '<div style="color: #28a745; font-weight: bold; margin-top: 10px;">🌟 Bonus: +' + bonusPoints + ' points for excellent judgment!</div>' : '');
             
             scoreElement.textContent = finalScore;
-            learningElement.innerHTML = `<strong>Key Learning:</strong> ${learningPoint}`;
+            learningElement.innerHTML = '<strong>Key Learning:</strong> ' + scenario.learning;
             
-            // Advanced performance analytics
+            // Progress tracking
             const currentScenarioNum = currentScenario + 1;
             const avgSoFar = Math.round(totalScore / currentScenarioNum);
             
             if (currentScenarioNum > 1) {
-                learningElement.innerHTML += `<br><br><strong>Your Progress:</strong> Average score ${avgSoFar}/100 after ${currentScenarioNum} scenarios.`;
+                learningElement.innerHTML += '<br><br><strong>Your Progress:</strong> Average score ' + avgSoFar + '/100 after ' + currentScenarioNum + ' scenarios.';
             }
             
             if (finalScore >= 80) {
@@ -1509,84 +1293,32 @@
             let professionalRecommendations = '';
             let nextSteps = '';
             
-            // G3 RMS Certification-based assessment
             if (avgScore >= 95) {
                 certificationLevel = "🏆 G3 RMS Expert - Ready for Advanced Implementation";
-                professionalRecommendations = `
-                    • Consider pursuing IDeaS G3 RMS Essentials Certification ($180)
-                    • Qualified for advanced features: Enterprise Business Guidelines, Optix Analytics
-                    • Ready to mentor other revenue managers in G3 best practices
-                    • Consider HSMAI CRME/CRMA certification pathway
-                `;
+                professionalRecommendations = "• Consider pursuing IDeaS G3 RMS Essentials Certification ($180)\\n• Qualified for advanced features: Enterprise Business Guidelines, Optix Analytics\\n• Ready to mentor other revenue managers in G3 best practices\\n• Consider HSMAI CRME/CRMA certification pathway";
                 nextSteps = "You demonstrate mastery of G3 RMS principles. Focus on strategic revenue management and team leadership.";
             } else if (avgScore >= 85) {
                 certificationLevel = "✅ G3 RMS Proficient - Strong System Understanding";
-                professionalRecommendations = `
-                    • Recommended for IDeaS G3 RMS Essentials Certification
-                    • Ready for advanced training on LOS optimization and room-type yielding
-                    • Consider joining G3 user groups and industry forums
-                    • Practice with What-If analysis tools for strategic planning
-                `;
+                professionalRecommendations = "• Recommended for IDeaS G3 RMS Essentials Certification\\n• Ready for advanced training on LOS optimization and room-type yielding\\n• Consider joining G3 user groups and industry forums\\n• Practice with What-If analysis tools for strategic planning";
                 nextSteps = "Excellent progress! Continue building expertise in advanced G3 features and competitive analysis.";
             } else if (avgScore >= 70) {
                 certificationLevel = "📈 G3 RMS Developing - Building Core Skills";
-                professionalRecommendations = `
-                    • Complete comprehensive G3 RMS training before certification
-                    • Focus on understanding forecast accuracy and confidence levels
-                    • Practice daily workflow optimization and exception management
-                    • Review G3 documentation on override best practices
-                `;
+                professionalRecommendations = "• Complete comprehensive G3 RMS training before certification\\n• Focus on understanding forecast accuracy and confidence levels\\n• Practice daily workflow optimization and exception management\\n• Review G3 documentation on override best practices";
                 nextSteps = "Good foundation! Strengthen understanding of when to trust G3 vs. when human insight adds value.";
             } else if (avgScore >= 55) {
                 certificationLevel = "📚 G3 RMS Learning - Foundational Development Needed";
-                professionalRecommendations = `
-                    • Enroll in basic G3 RMS training program immediately
-                    • Work with experienced G3 user mentor for 3-6 months
-                    • Focus on data quality management and PMS integration
-                    • Study IDeaS documentation on forecasting and optimization
-                `;
+                professionalRecommendations = "• Enroll in basic G3 RMS training program immediately\\n• Work with experienced G3 user mentor for 3-6 months\\n• Focus on data quality management and PMS integration\\n• Study IDeaS documentation on forecasting and optimization";
                 nextSteps = "Focus on fundamentals: data quality, system trust in normal conditions, and proper override protocols.";
             } else {
                 certificationLevel = "🎯 G3 RMS Beginner - Intensive Training Required";
-                professionalRecommendations = `
-                    • Mandatory comprehensive G3 RMS training before system access
-                    • Minimum 6 months supervised operation with experienced user
-                    • Complete Cornell eCornell Revenue Management program
-                    • Focus on basic revenue management principles before advanced features
-                `;
+                professionalRecommendations = "• Mandatory comprehensive G3 RMS training before system access\\n• Minimum 6 months supervised operation with experienced user\\n• Complete Cornell eCornell Revenue Management program\\n• Focus on basic revenue management principles before advanced features";
                 nextSteps = "Significant development needed. Start with revenue management fundamentals before G3-specific training.";
             }
             
-            let finalMessage = `G3 RMS TRAINING ASSESSMENT COMPLETE
-
-🎯 OVERALL PERFORMANCE
-Average Score: ${avgScore}/100
-${certificationLevel}
-
-💼 PROFESSIONAL RECOMMENDATIONS
-${professionalRecommendations}
-
-🚀 NEXT STEPS
-${nextSteps}
-
-📈 KEY G3 RMS PRINCIPLES TO REMEMBER:
-• Trust G3's analytics for normal market conditions (80% acceptance rate target)
-• Investigate when confidence is Medium/Low or when alerts are present
-• Override only with information G3 doesn't have (external events, strategic decisions)
-• Focus on data quality - G3 can't optimize with bad inputs
-• Use G3's time savings for strategic work, not tactical overrides
-
-🎓 CERTIFICATION PATH:
-1. Master daily G3 operations (6-12 months experience)
-2. Complete IDeaS G3 RMS Essentials Certification
-3. Pursue advanced revenue management credentials (CRME/CRMA)
-4. Specialize in advanced G3 features (Optix, EBG, Multi-property)
-
-Would you like to restart the training scenarios for additional practice?`;
+            let finalMessage = 'G3 RMS TRAINING ASSESSMENT COMPLETE\\n\\n🎯 OVERALL PERFORMANCE\\nAverage Score: ' + avgScore + '/100\\n' + certificationLevel + '\\n\\n💼 PROFESSIONAL RECOMMENDATIONS\\n' + professionalRecommendations + '\\n\\n🚀 NEXT STEPS\\n' + nextSteps + '\\n\\n📈 KEY G3 RMS PRINCIPLES TO REMEMBER:\\n• Trust G3\'s analytics for normal market conditions (80% acceptance rate target)\\n• Investigate when confidence is Medium/Low or when alerts are present\\n• Override only with information G3 doesn\'t have (external events, strategic decisions)\\n• Focus on data quality - G3 can\'t optimize with bad inputs\\n• Use G3\'s time savings for strategic work, not tactical overrides\\n\\n🎓 CERTIFICATION PATH:\\n1. Master daily G3 operations (6-12 months experience)\\n2. Complete IDeaS G3 RMS Essentials Certification\\n3. Pursue advanced revenue management credentials (CRME/CRMA)\\n4. Specialize in advanced G3 features (Optix, EBG, Multi-property)\\n\\nWould you like to restart the training scenarios for additional practice?';
             
             alert(finalMessage);
             
-            // Reset for additional practice
             if (confirm("Would you like to restart the training scenarios for additional practice?")) {
                 currentScenario = 0;
                 totalScore = 0;
@@ -1594,8 +1326,75 @@ Would you like to restart the training scenarios for additional practice?`;
             }
         }
         
-        // Initialize the game
-        initializeScenario();
+        // Make functions globally available for the investigation modal
+        window.closeInvestigation = closeInvestigation;
+        window.submitDecision = submitDecision;
+        
+        // Wait for DOM and Chart.js to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up event listeners...');
+            
+            // Wait a bit more for Chart.js to be fully loaded
+            setTimeout(function() {
+                try {
+                    // Add event listeners to buttons
+                    const acceptBtn = document.getElementById('acceptBtn');
+                    const investigateBtn = document.getElementById('investigateBtn');
+                    const overrideBtn = document.getElementById('overrideBtn');
+                    const submitOverrideBtn = document.getElementById('submitOverrideBtn');
+                    const nextScenarioBtn = document.getElementById('nextScenarioBtn');
+                    
+                    console.log('Setting up button event listeners...');
+                    
+                    if (acceptBtn) {
+                        acceptBtn.addEventListener('click', function() {
+                            console.log('Accept button clicked');
+                            selectDecision('accept');
+                        });
+                        console.log('Accept button listener added');
+                    }
+                    
+                    if (investigateBtn) {
+                        investigateBtn.addEventListener('click', function() {
+                            console.log('Investigate button clicked');
+                            selectDecision('investigate');
+                        });
+                        console.log('Investigate button listener added');
+                    }
+                    
+                    if (overrideBtn) {
+                        overrideBtn.addEventListener('click', function() {
+                            console.log('Override button clicked');
+                            selectDecision('override');
+                        });
+                        console.log('Override button listener added');
+                    }
+                    
+                    if (submitOverrideBtn) {
+                        submitOverrideBtn.addEventListener('click', function() {
+                            console.log('Submit override button clicked');
+                            submitDecision();
+                        });
+                        console.log('Submit override button listener added');
+                    }
+                    
+                    if (nextScenarioBtn) {
+                        nextScenarioBtn.addEventListener('click', function() {
+                            console.log('Next scenario button clicked');
+                            nextScenario();
+                        });
+                        console.log('Next scenario button listener added');
+                    }
+                    
+                    // Initialize the first scenario
+                    console.log('Initializing first scenario...');
+                    initializeScenario();
+                    
+                } catch (error) {
+                    console.error('Error setting up application:', error);
+                }
+            }, 100); // Small delay to ensure Chart.js is ready
+        });
     </script>
 </body>
 </html>
